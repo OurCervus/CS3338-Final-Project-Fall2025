@@ -1,0 +1,222 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{tabularx}
+
+\pagestyle{fancy}
+\geometry{a4paper, margin=1in}
+\fancyhf{}
+\fancyhead[C]{Design Specification}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+\title{Design Specification \\ \large Role-Based Internal Platform for Targeted Content Delivery}
+\author{Group 20}
+\date{December 5, 2025}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+This Design Specification outlines the structural breakdown of the Platform, including:
+\begin{itemize}
+    \item All frontend pages.
+    \item All backend modules.
+    \item Tools and technologies used.
+    \item A complete list of packages, dependencies, and Docker resources required.
+\end{itemize}
+
+It supports both the SRS and SDD by providing a concrete implementation plan.
+
+\section{Frontend Design}
+
+The frontend is a React-based web interface.
+
+\subsection{Login Page}
+\begin{itemize}
+    \item Fields: Email, Password.
+    \item Actions: Log In.
+    \item Behavior:
+    \begin{itemize}
+        \item Sends POST /api/auth/login.
+        \item Redirects based on user role.
+    \end{itemize}
+\end{itemize}
+
+\subsection{End User Dashboard}
+\begin{itemize}
+    \item Displays personalized targeted content (announcements, policies, training).
+    \item Filters: Category, Status (All, Mandatory, Completed).
+    \item Search bar for titles/keywords.
+    \item Each content card shows title, summary, mandatory badge.
+\end{itemize}
+
+\subsection{Content Detail Page}
+\begin{itemize}
+    \item Full content body, metadata, start/end dates.
+    \item Acknowledge button for mandatory content.
+    \item Sends:
+    \begin{itemize}
+        \item POST /api/content/\{id\}/view
+        \item POST /api/content/\{id\}/acknowledge
+    \end{itemize}
+\end{itemize}
+
+\subsection{Admin Content List}
+\begin{itemize}
+    \item Table of all content items.
+    \item Actions: Create, Edit, Archive.
+    \item Columns: Title, Mandatory, Dates, Status.
+\end{itemize}
+
+\subsection{Content Editor \& Targeting Rules Page}
+\begin{itemize}
+    \item Fields: Title, Body, Category, Start/End Dates, Mandatory Flag.
+    \item Targeting Rules:
+    \begin{itemize}
+        \item Field (role, department, location)
+        \item Operator
+        \item Value
+    \end{itemize}
+\end{itemize}
+
+\subsection{Reporting Dashboard}
+\begin{itemize}
+    \item Displays views, acknowledgements, completion rates.
+    \item Export CSV option.
+\end{itemize}
+
+\subsection{User Management Page}
+\begin{itemize}
+    \item Create/Update users.
+    \item Assign roles.
+    \item Activate/Deactivate accounts.
+\end{itemize}
+
+\section{Backend Design}
+
+The backend is one Python app that the website talks to. It handles things like logging in, checking rules, and getting data from the database.
+
+\subsection{Auth Module}
+\begin{itemize}
+    \item Login, logout, password validation.
+    \item JWT-based session management.
+    \item Role-based access checks.
+\end{itemize}
+
+\subsection{User \& Role Management}
+\begin{itemize}
+    \item CRUD operations for users.
+    \item Role assignments.
+\end{itemize}
+
+\subsection{Content Management}
+\begin{itemize}
+    \item Create, edit, schedule, archive content.
+    \item Store metadata for targeting.
+\end{itemize}
+
+\subsection{Targeting Engine}
+\begin{itemize}
+    \item Evaluates targeting rules against user attributes.
+    \item Supports AND/OR logic groups.
+\end{itemize}
+
+\subsection{Delivery Service}
+\begin{itemize}
+    \item Generates personalized content feed.
+    \item Logs view and acknowledgement events.
+\end{itemize}
+
+\subsection{Reporting Engine}
+\begin{itemize}
+    \item Aggregates engagement data.
+    \item Returns compliance summaries.
+\end{itemize}
+
+\section{Database Design}
+
+Core tables used:
+\begin{itemize}
+    \item \textbf{User}: id, email, password hash, department, location, active flag.
+    \item \textbf{Role}: id, name.
+    \item \textbf{UserRole}: user\_id, role\_id.
+    \item \textbf{ContentItem}: id, title, body, mandatory, dates.
+    \item \textbf{TargetRule}: id, content\_id, field, operator, value.
+    \item \textbf{DeliveryEvent}: id, content\_id, user\_id, type, timestamp.
+\end{itemize}
+
+\section{Tools Used}
+
+\subsection{Languages \& Frameworks}
+\begin{itemize}
+    \item Python (backend)
+    \item Flask (API framework)
+    \item React (frontend)
+    \item JavaScript/TypeScript
+    \item PostgreSQL (database)
+\end{itemize}
+
+\subsection{Development Tools}
+\begin{itemize}
+    \item Docker
+    \item Jira 
+    \item GitHub
+    \item LaTeX
+\end{itemize}
+
+\section{Dependencies \& Packages}
+
+\subsection{Backend Dependencies (Python)}
+\begin{itemize}
+    \item Flask
+    \item Flask-JWT-Extended (authentication)
+    \item SQLAlchemy (ORM)
+    \item psycopg2-binary (PostgreSQL connector)
+    \item passlib[bcrypt] (password hashing)
+    \item python-dotenv
+\end{itemize}
+
+\subsection{Frontend Dependencies (React)}
+\begin{itemize}
+    \item react
+    \item react-dom
+    \item react-router-dom
+    \item axios (API calls)
+    \item UI library (Material UI or similar)
+\end{itemize}
+
+\subsection{Dev Dependencies}
+\begin{itemize}
+    \item eslint, prettier
+    \item typescript (if used)
+\end{itemize}
+
+\subsection{Docker Components}
+\begin{itemize}
+    \item Backend Container:
+          \begin{itemize}
+              \item Base: python:3.12-slim
+              \item Installs backend dependencies
+          \end{itemize}
+    \item Frontend Container:
+          \begin{itemize}
+              \item Base: node:20-alpine
+              \item Builds React app
+          \end{itemize}
+    \item Database Container:
+          \begin{itemize}
+              \item Base: postgres:16-alpine
+              \item Stores persistent data
+          \end{itemize}
+\end{itemize}
+
+
+\end{document}
