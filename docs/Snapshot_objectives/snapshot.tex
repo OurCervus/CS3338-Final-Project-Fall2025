@@ -1,0 +1,242 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+]{hyperref}
+\usepackage{tabularx}
+
+\pagestyle{fancy}
+\geometry{a4paper, margin=1in}
+\captionsetup{labelformat=empty}
+
+\begin{document}
+
+\title{Snapshot Objectives \\ \large Role-Based Internal Platform for Targeted Content Delivery}
+\author{Version 1.0.0}
+\date{
+       Group 20
+   \\ Jesus Calvo,
+    \\ Justin Gip
+    \\ Shane Guzman
+    \\ Samuel Mekonnen
+    \\ ------------------
+    \\ December 5, 2025
+    \\ CS 3338-01 (94305)
+}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\fancyhf{}
+\fancyhead[C]{Snapshot Objectives}
+\fancyfoot[C]{\thepage}
+
+\section{Introduction}
+
+This document defines the objectives for each snapshot for the \textbf{Role-Based Internal Platform for Targeted Content Delivery}. Snapshots represent development milestones. Each snapshot includes:
+\begin{itemize}
+    \item Functional objectives (SRS requirements).
+    \item Design and documentation deliverables.
+    \item Testing objectives tracked using Jira.
+\end{itemize}
+
+\section{Snapshot 1 Objectives}
+
+\subsection{Goal}
+Establish the foundational architecture, implement basic authentication, and produce a minimal working interface. This snapshot validates that the system is functional.
+
+\subsection{Functional Objectives}
+\begin{itemize}
+    \item Implement the user authentication workflow:
+    \begin{itemize}
+        \item Support login with email and password (FR-01, FR-02).
+        \item Restrict access to authenticated pages (FR-03).
+        \item Associate users with roles within the database (FR-04).
+        \item Restrict administrative pages based on roles (FR-05).
+    \end{itemize}
+    \item Provide a simple post-login dashboard with placeholder content (precursor to FR-15).
+\end{itemize}
+
+\subsection{Design and Documentation Objectives}
+\begin{itemize}
+    \item Deliver initial versions of:
+    \begin{itemize}
+        \item Software Requirements Specification (SRS).
+        \item Software Design Document (SDD).
+        \item README / User Manual.
+        \item Design Specification.
+        \item Workflow Diagrams
+    \end{itemize}
+    \item Define the initial database schematic for \textit{User}, \textit{Role}, and \textit{UserRole}.
+\end{itemize}
+
+\subsection{Testing Objectives}
+\begin{itemize}
+    \item Create Jira test cases for:
+    \begin{itemize}
+        \item Login with valid credentials.
+        \item Login with invalid credentials.
+        \item Access control for protected routes.
+    \end{itemize}
+    \item Conduct manual smoke testing for the authentication flow.
+\end{itemize}
+
+\section{Snapshot 2 Objectives}
+
+\subsection{Goal}
+Introduce full content management and targeting rule capabilities, enabling administrators to create content and assign audiences based on user attributes.
+
+\subsection{Functional Objectives}
+\begin{itemize}
+    \item Implement content management functionality (FR-06--FR-10):
+    \begin{itemize}
+        \item Create content items with title, body, categories, and tags.
+        \item Specify start and end dates.
+        \item Mark items as mandatory or optional.
+        \item Edit and archive existing content.
+    \end{itemize}
+    \item Implement attribute-based targeting rules (FR-11--FR-14):
+    \begin{itemize}
+        \item Define rules using role, department, and location attributes.
+        \item Support logical AND/OR combinations.
+        \item Evaluate targeting rules at runtime.
+        \item Update targeting evaluations when user attributes change.
+    \end{itemize}
+    \item Provide an \textbf{Admin Content List} and \textbf{Content Editor} UI.
+\end{itemize}
+
+\subsection{Design and Documentation Objectives}
+\begin{itemize}
+    \item Update the SDD with:
+    \begin{itemize}
+        \item Detailed design for the Content Management module.
+        \item Targeting Engine architecture and data model updates.
+    \end{itemize}
+    \item Update the Design Specification with:
+    \begin{itemize}
+        \item Admin Content List page layout.
+        \item Content Editor form fields and workflows.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Testing Objectives}
+\begin{itemize}
+    \item Create Jira test cases for:
+    \begin{itemize}
+        \item Creating content with valid and invalid data.
+        \item Editing and archiving content.
+        \item Creating and validating targeting rules.
+        \item Ensuring visibility of content matches targeting criteria.
+    \end{itemize}
+\end{itemize}
+
+\section{Snapshot 3 Objectives}
+
+\subsection{Goal}
+Deliver the full targeted content feed, user acknowledgement capabilities, and core analytics/reporting tools.
+
+\subsection{Functional Objectives}
+\begin{itemize}
+    \item Implement targeted content feed features (FR-15--FR-19):
+    \begin{itemize}
+        \item Display only active, targeted content.
+        \item Apply filters for categories and completion status.
+        \item Provide search by title or keyword.
+    \end{itemize}
+    \item Implement acknowledgement and tracking features (FR-20--FR-23):
+    \begin{itemize}
+        \item Record content views.
+        \item Allow acknowledgement of mandatory content.
+        \item Prevent acknowledgement on behalf of another user.
+    \end{itemize}
+    \item Implement reporting features (FR-24--FR-26):
+    \begin{itemize}
+        \item Provide overview metrics for content.
+        \item Provide team completion reporting for managers.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Design and Documentation Objectives}
+\begin{itemize}
+    \item Update SDD sections regarding:
+    \begin{itemize}
+        \item Delivery Service.
+        \item Analytics and Reporting architecture.
+        \item DeliveryEvent schema and aggregation logic.
+    \end{itemize}
+    \item Update the Design Specification to include:
+    \begin{itemize}
+        \item End User Dashboard.
+        \item Content Detail Page.
+        \item Reports Dashboard.
+        \item Manager Team Completion view.
+    \end{itemize}
+    \item Update the README with user and admin workflows for content delivery and reporting.
+\end{itemize}
+
+\subsection{Testing Objectives}
+\begin{itemize}
+    \item Define Jira test cases for:
+    \begin{itemize}
+        \item Feed behavior across multiple roles and departments.
+        \item Acknowledgement event tracking.
+        \item Accuracy of reporting calculations.
+    \end{itemize}
+\end{itemize}
+
+\section{Snapshot 4 Objectives}
+
+\subsection{Goal}
+Finalize administrative tools, improve nonfunctional aspects, and complete all documentation required for project delivery.
+
+\subsection{Functional Objectives}
+\begin{itemize}
+    \item Implement full user and role management (FR-27--FR-30):
+    \begin{itemize}
+        \item Create, update, deactivate, and reactivate users.
+        \item Assign and manage roles.
+        \item Reset passwords.
+        \item Log administrative changes.
+    \end{itemize}
+    \item Refine and polish previously implemented features:
+    \begin{itemize}
+        \item Improve UI/UX elements based on prior feedback.
+        \item Add additional filters or search tools as needed.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Design and Documentation Objectives}
+\begin{itemize}
+    \item Finalize SRS and SDD:
+    \begin{itemize}
+        \item Ensure design and requirements reflect the implemented system.
+        \item Complete revision histories and update traceability.
+    \end{itemize}
+    \item Finalize:
+    \begin{itemize}
+        \item Design Specification.
+        \item README / User Manual (including Jira link).
+        \item Snapshot Objectives (this document).
+    \end{itemize}
+\end{itemize}
+
+\subsection{Testing Objectives}
+\begin{itemize}
+    \item Create a final Jira test cycle that:
+    \begin{itemize}
+        \item Tests all major system features end-to-end.
+        \item Includes regression tests from earlier snapshots.
+    \end{itemize}
+\end{itemize}
+
+\end{document}
