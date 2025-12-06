@@ -1,0 +1,51 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\geometry{a4paper, margin=1in}
+
+\begin{document}
+
+\title{Design Spec}
+\author{Group 20}
+\date{December 11, 2025}
+
+\maketitle
+
+\fancyhf{}
+\fancyhead[C]{Design Spec}
+\fancyfoot[C]{\thepage}
+
+The Role-Based Internal Content Delivery Platform is designed to give users personalized information based on their assigned roles. This document explains how each part of the system functions and how users move through the application.
+
+\section{Main Control System}
+The \textit{Main Control system} handles what the user sees on the screen. It determines which dashboard to load depending on whether the user is an End User, Content Admin, or System Admin. It also manages routing between all pages of the platform.
+
+\section{Database}
+The \textit{database} stores all persistent data used by the platform. This includes users, roles, permissions, content items, targeting rules, event logs, and reporting data. Every major part of the website interacts with the database through the backend services, including authentication, content creation, feed generation, and reporting.
+
+\section{Login Page}
+The \textit{Login page} allows users to sign into the platform. When credentials are entered, the page sends the information to the Main Control system, which forwards it to the authentication service. The backend checks the username and password against the database. If valid, the system grants access and sends back the user's role information. If invalid, an error is returned and the user must try again.
+
+\section{End User Dashboard}
+When an End User logs in, they are taken to their personalized \textit{End User Dashboard}. This page displays targeted content selected specifically for their role or department. Users may view items, acknowledge them, or mark them as read. All actions taken by the user are recorded and sent back to the database for reporting and analytics.
+
+\section{Content Admin Dashboard}
+The \textit{Content Admin Dashboard} allows administrators to create new content, edit existing items, assign targeting rules, and schedule publication times. When an admin saves a piece of content, the dashboard communicates with the Main Control system, which then sends the data to the database. Content Admins are responsible for ensuring that employees see the correct information.
+
+\section{System Admin Dashboard}
+The \textit{System Admin Dashboard} is used for managing users and roles. System Admins can create new accounts, update user information, deactivate accounts, and adjust role assignments. This page interacts heavily with the authentication and RBAC services to ensure that all permissions remain accurate and secure.
+
+\section{Notification System}
+The \textit{Notification system} automatically sends reminders or alerts to users when new or expiring content becomes available. The notification service checks the database at set intervals and determines whether any content requires user attention. If so, it sends the appropriate alerts to the affected users.
+
+\section{Reporting Page}
+The \textit{Reporting page} gives administrators insights into how users interact with the content. It displays aggregated data such as view counts, acknowledgement rates, and which items are most frequently accessed. This page communicates with the backend reporting service, which retrieves information from the event logs stored in the database.
+
+\section{About Us and Help Pages}
+These pages provide general information for the user. The \textit{About Us page} describes the purpose of the platform and its creators, while the \textit{Help page} provides answers to common questions users may have. These pages contain static content and do not require database interaction.
+
+\end{document}
