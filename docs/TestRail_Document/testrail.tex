@@ -1,0 +1,643 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+]{hyperref}
+\usepackage{tabularx}
+
+\pagestyle{fancy}
+\geometry{a4paper, margin=1in}
+\captionsetup{labelformat=empty}
+
+\begin{document}
+
+\title{Test Cases and Hypothetical Test Reports \\ \large Role-Based Internal Platform for Targeted Content Delivery}
+\author{Version 1.0.0}
+\date{
+       Group 20
+   \\ Jesus Calvo,
+    \\ Justin Gip
+    \\ Shane Guzman
+    \\ Samuel Mekonnen
+    \\ ------------------
+    \\ December 5, 2025
+    \\ CS 3338-01 (94305)
+}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\fancyhf{}
+\fancyhead[C]{Test Cases and Reports}
+\fancyfoot[C]{\thepage}
+
+\section{Introduction}
+
+This document describes the functional test cases and test execution reports for the \textbf{Role-Based Internal Platform for Targeted Content Delivery}.  
+Test cases are derived from the Software Requirements Specification (SRS) and Software Design Document (SDD) and grouped by project snapshot.
+
+Each test case includes:
+\begin{itemize}
+    \item A unique Test Case ID.
+    \item Related functional requirement(s) (FR-\textit{nn}).
+    \item Preconditions.
+    \item Test steps.
+    \item Expected results.
+\end{itemize}
+
+For each snapshot a short, test report is provided, summarizing the imagined outcome of executing these tests and how they relate to the implemented Jira work items.
+
+\section{Test Strategy Overview}
+
+\subsection{Scope}
+
+The test cases in this document focus on validating key behaviors of:
+\begin{itemize}
+    \item User authentication and authorization.
+    \item Content management and targeting.
+    \item Targeted content feed and acknowledgements.
+    \item Reporting and administration features.
+\end{itemize}
+
+Nonfunctional requirements (performance, security, usability) are touched by a small number of high-level tests.
+
+\subsection{Test Levels}
+
+\begin{itemize}
+    \item \textbf{Unit tests} for core business logic (e.g., targeting engine, acknowledgement rules).
+    \item \textbf{API-level integration tests} for endpoints like \texttt{/api/auth/login}, \texttt{/api/content}, \texttt{/api/feed}, and \texttt{/api/events}.
+    \item \textbf{UI/system tests} for end-to-end flows executed via the web interface.
+\end{itemize}
+
+\subsection{Test Management}
+
+In a real deployment, tests would be tracked using:
+\begin{itemize}
+    \item Jira issues for each feature and defect.
+    \item A testing section or board within the Jira project for organizing manual and automated test runs.
+\end{itemize}
+
+For the purpose of this course project, this document serves as the primary record of test cases and reports.
+
+\section{Snapshot 1 Test Cases: Authentication and Basic Navigation}
+
+\subsection{Scope}
+
+Snapshot 1 focuses on:
+\begin{itemize}
+    \item User login and basic RBAC (FR-01--FR-05).
+    \item Minimal dashboard after login.
+\end{itemize}
+
+\subsection{Test Cases}
+
+\subsubsection*{TC-1.1: Login with Valid Credentials}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-01, FR-02, FR-03
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item User \texttt{employee1@example.com} exists with a known password.
+        \item User account is active.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Navigate to the Login page.
+        \item Enter valid email and password for \texttt{employee1@example.com}.
+        \item Click the \textbf{Login} button.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item User is redirected to the dashboard page.
+        \item A valid session or token is created.
+        \item Protected pages can now be accessed without being redirected back to login.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-1.2: Login with Invalid Password}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-01, FR-02
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item User \texttt{employee1@example.com} exists.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Navigate to the Login page.
+        \item Enter correct email but an incorrect password.
+        \item Click the \textbf{Login} button.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item Login attempt is rejected.
+        \item An error message such as ``Invalid email or password'' is shown.
+        \item No session or token is created.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-1.3: Access Protected Page When Not Authenticated}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-03
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item No active session or token.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Attempt to directly open the dashboard URL in the browser.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item User is redirected to the login page OR receives a \texttt{401 Unauthorized} response.
+        \item No dashboard content is displayed.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-1.4: Role-Based Access to Admin Console}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-04, FR-05
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item \texttt{employee1} has the \texttt{Employee} role only.
+        \item \texttt{admin1} has the \texttt{Content Administrator} role.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Log in as \texttt{employee1}. Attempt to open Admin Console.
+        \item Log out, then log in as \texttt{admin1}. Open Admin Console.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item \texttt{employee1} is denied access (error message or redirect).
+        \item \texttt{admin1} can access Admin Console successfully.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Hypothetical Snapshot 1 Test Report}
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Snapshot 1 Test Execution Summary (Hypothetical)}}
+\begin{tabularx}{0.9\textwidth}{|l|c|c|c|c|}
+\hline
+\textbf{Test Case Group} & \textbf{\# Cases} & \textbf{Passed} & \textbf{Failed} & \textbf{Blocked} \\ \hline
+Authentication (TC-1.1--TC-1.3) & 3 & 3 & 0 & 0 \\ \hline
+Role-Based Access (TC-1.4) & 1 & 1 & 0 & 0 \\ \hline
+\textbf{Total} & \textbf{4} & \textbf{4} & \textbf{0} & \textbf{0} \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent
+\textbf{Summary (Hypothetical):} All Snapshot 1 tests passed. Basic authentication and RBAC are functioning as expected, providing a stable foundation for later snapshots.
+
+\newpage
+\section{Snapshot 2 Test Cases: Content Management and Targeting}
+
+\subsection{Scope}
+
+Snapshot 2 adds content management and initial targeting logic:
+\begin{itemize}
+    \item Content creation, scheduling, and archiving (FR-06--FR-10).
+    \item Attribute-based targeting rules (FR-11--FR-14).
+\end{itemize}
+
+\subsection{Test Cases}
+
+\subsubsection*{TC-2.1: Create Content Item with Valid Data}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-06
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item Logged in as \texttt{Content Administrator}.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Navigate to \textbf{Create Content} page.
+        \item Enter title, body, and select category and tags.
+        \item Click \textbf{Save}.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item New content item is persisted and appears in Admin Content List.
+        \item No validation errors are displayed.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-2.2: Reject Content Creation with Missing Title}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-06
+    \item \textbf{Preconditions:} Logged in as \texttt{Content Administrator}.
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Open \textbf{Create Content}.
+        \item Leave title empty; fill in body and category.
+        \item Click \textbf{Save}.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item Content is not saved.
+        \item Validation error indicates title is required.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-2.3: Schedule Content Using Start and End Dates}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-07, FR-19
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item Logged in as \texttt{Content Administrator}.
+        \item Current date is between two known dates.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Create content C1 with start date = today and end date = today + 7 days.
+        \item Create content C2 with end date = yesterday.
+        \item Log in as \texttt{employee1} and view feed.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item C1 is visible in the feed.
+        \item C2 is not visible because it has expired.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-2.4: Archive Content Item}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-10
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item An active content item C3 exists.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item As \texttt{Content Administrator}, open C3 in the Admin Content List.
+        \item Click \textbf{Archive} and confirm.
+        \item Log in as targeted end user and view feed.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item C3 is no longer shown to end users.
+        \item C3 appears with status \texttt{Archived} in Admin Content List.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-2.5: Simple Role-Based Targeting Rule}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-11, FR-13
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item User \texttt{employee1} with role = Employee.
+        \item User \texttt{manager1} with role = Manager.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Create content C4 targeted to role = Manager.
+        \item Log in as \texttt{employee1} and view feed.
+        \item Log in as \texttt{manager1} and view feed.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item \texttt{employee1} does not see C4.
+        \item \texttt{manager1} sees C4 in the feed.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-2.6: Update Targeting After Role Change}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-14
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item Content C5 targeted to role = Manager.
+        \item User \texttt{employee2} currently role = Employee.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Log in as \texttt{employee2}; verify C5 is not visible.
+        \item Change \texttt{employee2}'s role to Manager using User Administration.
+        \item Log in again as \texttt{employee2} and view feed.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item Initially C5 is not in the feed.
+        \item After role change, C5 appears for \texttt{employee2}.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Hypothetical Snapshot 2 Test Report}
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Snapshot 2 Test Execution Summary (Hypothetical)}}
+\begin{tabularx}{0.9\textwidth}{|l|c|c|c|c|}
+\hline
+\textbf{Test Case Group} & \textbf{\# Cases} & \textbf{Passed} & \textbf{Failed} & \textbf{Blocked} \\ \hline
+Content Creation and Validation (TC-2.1--TC-2.2) & 2 & 2 & 0 & 0 \\ \hline
+Scheduling and Archiving (TC-2.3--TC-2.4) & 2 & 1 & 1 & 0 \\ \hline
+Targeting Rules (TC-2.5--TC-2.6) & 2 & 2 & 0 & 0 \\ \hline
+\textbf{Total} & \textbf{6} & \textbf{5} & \textbf{1} & \textbf{0} \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent
+\textbf{Summary (Hypothetical):} One failure occurred in TC-2.3, where expired content still appeared in the feed due to an off-by-one comparison bug on end dates. A Jira bug ticket was created and fixed in Snapshot 3.
+
+\newpage
+\section{Snapshot 3 Test Cases: Targeted Feed, Acknowledgements, and Reporting}
+
+\subsection{Scope}
+
+Snapshot 3 delivers:
+\begin{itemize}
+    \item Targeted content feed (FR-15--FR-19).
+    \item View and acknowledgement tracking (FR-20--FR-23).
+    \item Initial reporting (FR-24--FR-26).
+\end{itemize}
+
+\subsection{Test Cases}
+
+\subsubsection*{TC-3.1: Personalized Feed Shows Only Targeted Content}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-15, FR-19
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item Content C6 targeted to role = Employee.
+        \item Content C7 targeted to role = Manager.
+        \item User \texttt{employee1} has role = Employee.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Log in as \texttt{employee1}.
+        \item Open End User Dashboard.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item C6 appears in feed.
+        \item C7 does not appear in feed.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-3.2: Feed Filtering by Category}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-17
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item Two visible content items exist: C8 (category = Compliance) and C9 (category = General).
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Log in and open dashboard.
+        \item Apply filter \textbf{Category = Compliance}.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item C8 remains visible.
+        \item C9 is hidden from the list.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-3.3: Search Content by Keyword}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-18
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Ensure there is content C10 with the title ``Privacy Policy Update''.
+        \item Enter keyword ``Privacy'' into search box.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item C10 appears in search results.
+        \item Unrelated content is excluded from results.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-3.4: Record View Event when Content is Opened}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-20
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Log in as \texttt{employee1}.
+        \item Open detail page for content C11.
+        \item Query \texttt{DeliveryEvent} table or reporting API for events for C11 and \texttt{employee1}.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item A \texttt{view} event exists for C11 and \texttt{employee1} with a recent timestamp.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-3.5: Acknowledge Mandatory Content}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-21, FR-22, FR-23
+    \item \textbf{Preconditions:} C12 is marked as mandatory for \texttt{employee1}.
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Log in as \texttt{employee1} and open C12.
+        \item Click \textbf{Acknowledge}.
+        \item Attempt to call API as a different user to acknowledge C12 on behalf of \texttt{employee1}.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item Acknowledgement is recorded with timestamp for \texttt{employee1}.
+        \item Attempt to acknowledge on behalf of another user is rejected with an error.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-3.6: Content Overview Report Shows Correct Counts}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-24
+    \item \textbf{Preconditions:}
+    \begin{itemize}
+        \item Known numbers of targeted, viewed, and acknowledged users for content C13.
+    \end{itemize}
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item As Content Administrator, open Reports Dashboard.
+        \item Locate row for C13.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item Report displays counts that match the underlying \texttt{DeliveryEvent} data.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Hypothetical Snapshot 3 Test Report}
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Snapshot 3 Test Execution Summary (Hypothetical)}}
+\begin{tabularx}{0.9\textwidth}{|l|c|c|c|c|}
+\hline
+\textbf{Test Case Group} & \textbf{\# Cases} & \textbf{Passed} & \textbf{Failed} & \textbf{Blocked} \\ \hline
+Targeted Feed (TC-3.1--TC-3.3) & 3 & 3 & 0 & 0 \\ \hline
+Acknowledgements and Events (TC-3.4--TC-3.5) & 2 & 2 & 0 & 0 \\ \hline
+Reporting (TC-3.6) & 1 & 1 & 0 & 0 \\ \hline
+\textbf{Total} & \textbf{6} & \textbf{6} & \textbf{0} & \textbf{0} \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent
+\textbf{Summary (Hypothetical):} All Snapshot 3 tests passed after the date-handling bug from Snapshot 2 was fixed. Reporting metrics align with event data.
+
+\newpage
+\section{Snapshot 4 Test Cases: Administration and Regression}
+
+\subsection{Scope}
+
+Snapshot 4 finalizes:
+\begin{itemize}
+    \item User and role administration (FR-27--FR-30).
+    \item Regression coverage over previous snapshots.
+\end{itemize}
+
+\subsection{Test Cases}
+
+\subsubsection*{TC-4.1: Create New User Account}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-27, FR-28
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Log in as System Administrator.
+        \item Open User Management page.
+        \item Create a new user with email, name, and role = Employee.
+        \item Save.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item New user appears in user list.
+        \item User can log in with initial credentials (after password setup flow, if applicable).
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-4.2: Deactivate and Reactivate User}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-27
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Deactivate existing user \texttt{employee3}.
+        \item Attempt to log in as \texttt{employee3}.
+        \item Reactivate \texttt{employee3}.
+        \item Attempt login again.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item Deactivated user cannot log in.
+        \item Reactivated user can log in successfully.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-4.3: Reset User Password}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-29
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item As System Administrator, request password reset for \texttt{employee4}.
+        \item Complete reset flow (e.g., admin-set or simulated email token).
+        \item Attempt login using new password.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item Login works only with new password.
+        \item Old password no longer works.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-4.4: Audit Log Entry for Administrative Change}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-30
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item As System Administrator, change the role of \texttt{employee4} from Employee to Manager.
+        \item Open the audit log or administrative change history.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item Log includes an entry recording who changed which user, from which role to which role, and when.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{TC-4.5: Regression -- Authentication, Content, and Feed Smoke Test}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Related Requirements:} FR-01--FR-26 (high-level coverage)
+    \item \textbf{Steps:}
+    \begin{enumerate}
+        \item Log in as employee and verify dashboard loads.
+        \item Ensure at least one targeted content item appears.
+        \item Open the content, verify a view event is recorded, and acknowledge if mandatory.
+        \item As Admin, verify that reporting reflects the new view and acknowledgement.
+    \end{enumerate}
+    \item \textbf{Expected Result:}
+    \begin{itemize}
+        \item No regressions in core authentication, content visibility, acknowledgement, or reporting paths.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Hypothetical Snapshot 4 Test Report}
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Snapshot 4 Test Execution Summary (Hypothetical)}}
+\begin{tabularx}{0.9\textwidth}{|l|c|c|c|c|}
+\hline
+\textbf{Test Case Group} & \textbf{\# Cases} & \textbf{Passed} & \textbf{Failed} & \textbf{Blocked} \\ \hline
+User and Role Management (TC-4.1--TC-4.4) & 4 & 4 & 0 & 0 \\ \hline
+Regression Smoke Test (TC-4.5) & 1 & 1 & 0 & 0 \\ \hline
+\textbf{Total} & \textbf{5} & \textbf{5} & \textbf{0} & \textbf{0} \\ \hline
+\end{tabularx}
+\end{table}
+
+\noindent
+\textbf{Summary (Hypothetical):} All Snapshot 4 administration and regression tests passed, indicating the system is ready for final demonstration.
+
+\newpage
+\section{Appendix A: Requirement-to-Test Traceability (Partial)}
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Sample Traceability Between Requirements and Test Cases}}
+\begin{tabularx}{\textwidth}{|l|X|X|}
+\hline
+\textbf{Requirement ID} & \textbf{Requirement Summary} & \textbf{Covering Test Case IDs} \\ \hline
+FR-01 & User login with email and password & TC-1.1, TC-1.2, TC-4.5 \\ \hline
+FR-03 & Prevent access when not logged in & TC-1.3 \\ \hline
+FR-05 & Restrict admin pages to roles & TC-1.4 \\ \hline
+FR-06 & Create content items & TC-2.1, TC-2.2 \\ \hline
+FR-07 \& FR-19 & Start/end dates and expired content & TC-2.3, TC-3.1 \\ \hline
+FR-11--FR-14 & Targeting rules and updates & TC-2.5, TC-2.6, TC-3.1 \\ \hline
+FR-15--FR-18 & Targeted feed, filters, search & TC-3.1, TC-3.2, TC-3.3 \\ \hline
+FR-20--FR-23 & Views and acknowledgements & TC-3.4, TC-3.5, TC-4.5 \\ \hline
+FR-24--FR-26 & Reporting and exports & TC-3.6, TC-4.5 \\ \hline
+FR-27--FR-30 & User administration and audit logs & TC-4.1--TC-4.4 \\ \hline
+\end{tabularx}
+\end{table}
+
+\end{document}
