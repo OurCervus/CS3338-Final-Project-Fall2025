@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rbip-backend
+    command: python -m src.main
+    # ^ change this to whatever your entrypoint module will be
+    volumes:
+      - ./backend/src:/app/src
+    environment:
+      - DATABASE_URL=postgresql://rbip_user:rbip_pass@db:5432/rbip_db
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"  # backend exposed on localhost:8000
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rbip-frontend
+    command: npm start
+    # For Vite or other tools, change to "npm run dev"
+    volumes:
+      - ./frontend/src:/usr/src/app/src
+    ports:
+      - "3000:3000"  # frontend exposed on localhost:3000
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:16
+    container_name: rbip-db
+    environment:
+      POSTGRES_DB: rbip_db
+      POSTGRES_USER: rbip_user
+      POSTGRES_PASSWORD: rbip_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  db_data:

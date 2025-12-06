@@ -1,0 +1,9 @@
+{
+  "name": "rbip-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "echo \"Placeholder: add React dev server here\" && tail -f /dev/null"
+  },
+  "dependencies": {}
+}
