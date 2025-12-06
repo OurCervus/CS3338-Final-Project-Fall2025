@@ -1,0 +1,391 @@
+\documentclass{article} 
+
+\usepackage{geometry}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+]{hyperref}
+\usepackage{tabularx}
+
+\pagestyle{fancy}
+\geometry{a4paper, margin=1in}
+\captionsetup{labelformat=empty}
+\graphicspath{ {../../assets/} }
+
+\begin{document}
+
+\title{Software Design Document \\ \large Role-Based Internal Platform for Targeted Content Delivery}
+\author{Version 1.0.0}
+\date{
+       Group 20
+   \\ Jesus Calvo,
+    \\ Justin Gip
+    \\ Shane Guzman
+    \\ Samuel Mekonnen
+    \\ ------------------
+    \\ December 5, 2025
+    \\ CS 3338-01 (94305)
+    }
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\fancyhf{}
+\fancyhead[C]{Software Design Document}
+\fancyfoot[C]{\thepage}
+
+\section*{Version Description}
+\begin{table}[h!]
+\centering
+\caption{\textbf{Version Description}}
+\begin{tabularx}{\textwidth}{|l|l|X|l|}
+\hline
+\textbf{Author} & \textbf{Date} & \textbf{Description} & \textbf{Version} \\ \hline
+Your Name & 10/15/25 & Initial draft of SDD created for project proposal & 0.1.0 \\ \hline
+Your Name & 11/05/25 & Updated architecture and data design for Snapshot 2 & 0.2.0 \\ \hline
+Team & 12/05/25 & Finalized design after feedback and implementation changes & 1.0.0 \\ \hline
+\end{tabularx}
+\end{table}
+
+\section{Introduction}
+
+\subsection{Purpose}
+This Software Design Document (SDD) describes the technical level and detailed design of the \textbf{Role-Based Internal Platform for Targeted Content Delivery} (the Platform). 
+It translates the functional and nonfunctional requirements defined in the Software Requirements Specification (SRS) into a architecture, technologies, and modules.
+The SDD is intended to guide developers, testers, and operations staff as they implement, test, deploy, and maintain the system.
+
+\subsection{Scope}
+The Platform is an internal web app used by organizations to deliver targeted announcements, training materials, and resources to employees based on their role, department, location, and other attributes.
+It includes:
+\begin{itemize}
+    \item A responsive web user interface for end users and administrators.
+    \item Role based authentication and authorization for all internal users.
+    \item A content management module for creating, tagging, and scheduling content.
+    \item A targeting rules engine that matches content to audiences.
+    \item Delivery channels for showing content in dashboards and sending notification by email.
+    \item Analytics and reporting for content engagement and compliance.
+\end{itemize}
+
+\subsection{Intended Audience}
+\begin{itemize}
+    \item \textbf{Developers} use this document to understand the system architecture, module responsibilities, and interfaces.
+    \item \textbf{Testers} use the detailed design to derive test plans, cases, and data needed to verify behavior.
+    \item \textbf{Project managers} use the SDD to understand the scope and complexity of the solution.
+    \item \textbf{Operations / DevOps} use the deployment view and nonfunctional design aspects.
+\end{itemize}
+
+\subsection{References}
+\begin{itemize}
+    \item Software Requirements Specification (SRS) for Role-Based Internal Platform for Targeted Content Delivery.
+    \item Jira space
+\end{itemize}
+
+\subsection{Definitions, Acronyms, and Abbreviations}
+\begin{itemize}
+    \item \textbf{RBAC} Role Based Access Control.
+    \item \textbf{CMS} Content Management System.
+    \item \textbf{NFR} Nonfunctional Requirement.
+    \item \textbf{SRS} Software Requirements Specification.
+    \item \textbf{SDD} Software Design Document.
+\end{itemize}
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Glossary of Acronyms}}
+\begin{tabularx}{0.8\textwidth}{|l|X|}
+\hline
+\textbf{Acronym} & \textbf{Definition} \\ \hline
+RBAC & Role Based Access Control \\ \hline
+CMS & Content Management System \\ \hline
+NFR & Nonfunctional Requirement \\ \hline
+SRS & Software Requirements Specification \\ \hline
+SDD & Software Design Document \\ \hline
+\end{tabularx}
+\end{table}
+
+\section{System Architecture}
+
+\subsection{Architectural Goals and Constraints}
+The system architecture is designed with the following goals:
+\begin{itemize}
+    \item Enforce strong role based access control for all content and actions.
+    \item Support flexible content targeting rules without code changes.
+    \item Be deployable in a containerized environment (e.g., Docker).
+    \item Be maintainable for a small team.
+\end{itemize}
+
+Constraints:
+\begin{itemize}
+    \item Web based user interface built using technologies covered in class (e.g., Jira, Docker, LaTex).
+    \item Back end implemented as a single service to keep the project manageable.
+    \item Uses a relational database such as PostgreSQL.
+\end{itemize}
+
+\subsection{High Level Architecture}
+At a high level, the Platform follows a layered architecture with the following layers:
+\begin{itemize}
+    \item \textbf{Presentation Layer} Web UI (end user portal and admin portal).
+    \item \textbf{Application Layer} HTTP API, authentication, content management, targeting engine, analytics.
+    \item \textbf{Data Layer} Relational database and persistence logic.
+    \item \textbf{Integration Layer} Email service or notification adapter.
+\end{itemize}
+\begin{itemize}
+    \item Users interacting with the Web UI via browser.
+    \item The Web UI making requests to the Application Layer (REST API).
+    \item The Application Layer reading and writing data in the Data Layer.
+    \item Optional outgoing calls to an email or notification service.
+\end{itemize}
+
+\section{Component Design}
+
+\subsection{Component Overview}
+The main components of the Platform are:
+\begin{itemize}
+    \item \textbf{Auth Service} Handles login, logout, password reset, and enforcement of RBAC.
+    \item \textbf{User and Role Management} Stores users, roles, permissions, and organizational attributes.
+    \item \textbf{Content Management} Allows admins to create, edit, schedule, and retire content items.
+    \item \textbf{Targeting Engine} Evaluates which users should see which content given a set of rules.
+    \item \textbf{Delivery Service} Exposes content to the UI and optionally triggers outbound emails.
+    \item \textbf{Analytics and Reporting} Aggregates view and click events and exposes metrics.
+\end{itemize}
+
+\subsection{Auth Service}
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Authenticate users via email and password.
+    \item Issue and validate session tokens or cookies.
+    \item Attach user identity and role information to each request.
+\end{itemize}
+
+\subsubsection{Interfaces}
+\begin{itemize}
+    \item POST /api/auth/login
+    \item POST /api/auth/logout
+    \item GET /api/auth/me
+\end{itemize}
+
+\subsection{User and Role Management}
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Create, read, update, and deactivate user accounts.
+    \item Maintain mapping of users to roles (e.g., Employee, Manager, HR, Admin).
+    \item Maintain permissions per role for actions such as content creation, publishing, and reporting.
+\end{itemize}
+
+\subsubsection{Interfaces}
+\begin{itemize}
+    \item GET /api/users
+    \item POST /api/users
+    \item GET /api/roles
+    \item POST /api/roles
+\end{itemize}
+
+\subsection{Content Management}
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Create and edit content items (title, body, attachments, tags).
+    \item Schedule content start and end dates.
+    \item Assign targeting rules to content.
+\end{itemize}
+
+\subsubsection{Interfaces}
+\begin{itemize}
+    \item GET /api/content
+    \item POST /api/content
+    \item PUT /api/content/\{id\}
+    \item DELETE /api/content/\{id\}
+\end{itemize}
+
+\subsection{Targeting Engine}
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Evaluate target audiences based on user attributes (role, department, location) and rule definitions.
+    \item Cache evaluations where possible to reduce database load.
+\end{itemize}
+
+\subsubsection{Rule Model}
+Targeting rules are represented as a set of conditions:
+\begin{itemize}
+    \item Field (e.g., role, department, location).
+    \item Operator (equals, in list, not equals).
+    \item Value(s) (e.g., ``Manager'', ``HR'', ``US'').
+\end{itemize}
+Rules can be combined using logical AND and OR groups.
+
+\subsection{Delivery Service}
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Provide the current user with the list of active content items they should see.
+    \item Log each view or click as an event.
+    \item Optionally send notification emails when new content is published.
+\end{itemize}
+
+\subsubsection{Interfaces}
+\begin{itemize}
+    \item GET /api/feed -- returns targeted content for the logged in user.
+    \item POST /api/events -- records content view or click events.
+\end{itemize}
+
+\subsection{Analytics and Reporting}
+\subsubsection{Responsibilities}
+\begin{itemize}
+    \item Aggregate events by content item, audience, and time window.
+    \item Expose metrics such as views, unique viewers, and completion rate for required content.
+\end{itemize}
+
+\subsubsection{Interfaces}
+\begin{itemize}
+    \item GET /api/reports/overview
+    \item GET /api/reports/content/\{id\}
+\end{itemize}
+
+\section{Data Design}
+
+\subsection{Data Model Overview}
+The Platform uses a relational database with normalized tables.
+Key entities include:
+\begin{itemize}
+    \item User
+    \item Role
+    \item UserRole (join table)
+    \item ContentItem
+    \item TargetRule
+    \item DeliveryEvent
+\end{itemize}
+
+\subsection{Core Tables}
+
+\subsubsection{User}
+\begin{itemize}
+    \item id (primary key)
+    \item email (unique)
+    \item password\_hash
+    \item first\_name
+    \item last\_name
+    \item department
+    \item location
+    \item is\_active
+    \item created\_at
+\end{itemize}
+
+\subsubsection{Role}
+\begin{itemize}
+    \item id (primary key)
+    \item name (e.g., Employee, Manager, HR, Admin)
+    \item description
+\end{itemize}
+
+\subsubsection{ContentItem}
+\begin{itemize}
+    \item id (primary key)
+    \item title
+    \item body
+    \item category
+    \item is\_mandatory (boolean)
+    \item start\_date
+    \item end\_date
+    \item created\_by\_user\_id (foreign key to User)
+\end{itemize}
+
+\subsubsection{TargetRule}
+\begin{itemize}
+    \item id (primary key)
+    \item content\_id (foreign key to ContentItem)
+    \item field (e.g., ``role'', ``department'', ``location'')
+    \item operator (e.g., ``EQUALS'', ``IN'')
+    \item value
+\end{itemize}
+
+\subsubsection{DeliveryEvent}
+\begin{itemize}
+    \item id (primary key)
+    \item content\_id (foreign key)
+    \item user\_id (foreign key)
+    \item event\_type (view, click, dismiss)
+    \item occurred\_at (timestamp)
+\end{itemize}
+
+\section{User Interface Design}
+
+\subsection{Screen Overview}
+The main screens are:
+\begin{itemize}
+    \item \textbf{Login Screen} Authenticates the user into the Platform.
+    \item \textbf{End User Dashboard} Shows a personalized feed of targeted content items, including filters and search.
+    \item \textbf{Content Detail Page} Displays full content, attachments, and required acknowledgement actions.
+    \item \textbf{Admin Content List} Lists all content items with status, author, and filters.
+    \item \textbf{Content Editor} Form for creating and editing content and targeting rules.
+    \item \textbf{Reports Dashboard} Displays analytics charts and tables.
+\end{itemize}
+
+\subsection{Navigation Flow}
+Typical navigation flow:
+\begin{enumerate}
+    \item User navigates to the login page and enters credentials.
+    \item After successful authentication, the Platform redirects to the appropriate dashboard:
+    \begin{itemize}
+        \item Regular employees see the End User Dashboard.
+        \item Admins see the Admin Content List or Reports Dashboard.
+    \end{itemize}
+    \item From the dashboard, users can click into a content item, acknowledge required content, or mark optional content as read.
+    \item Admin users can navigate to content creation, targeting configuration, and reporting views.
+\end{enumerate}
+
+\section{Requirements Traceability}
+
+ Table \ref{tab:traceability} demonstrates the requirements and its design
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Requirements Traceability}}
+\label{tab:traceability}
+\begin{tabularx}{\textwidth}{|l|X|X|}
+\hline
+\textbf{Requirement ID} & \textbf{Requirement (from SRS)} & \textbf{Design Element} \\ \hline
+FR-01 & The system shall authenticate users using organization credentials. & Auth Service, Login Screen \\ \hline
+FR-02 & The system shall allow admins to create and publish content items. & Content Management, Admin Content List, Content Editor \\ \hline
+FR-03 & The system shall show each user only the content targeted to them. & Targeting Engine, Delivery Service, End User Dashboard \\ \hline
+FR-04 & The system shall track when users view or acknowledge content. & DeliveryEvent table, Delivery Service, Reports Dashboard \\ \hline
+\end{tabularx}
+\end{table}
+
+\section{Nonfunctional Design Considerations}
+
+\subsection{Performance}
+\begin{itemize}
+    \item Use indexed columns on foreign keys and frequently filtered fields.
+    \item Cache the list of targeted content for a user within a short time window to reduce rule evaluations.
+\end{itemize}
+
+\subsection{Security}
+\begin{itemize}
+    \item All authenticated endpoints require a valid session or token.
+    \item Sensitive data, such as password hashes, is never logged or exposed through APIs.
+    \item RBAC checks are enforced in a single middleware or service to avoid duplication.
+\end{itemize}
+
+\subsection{Maintainability}
+\begin{itemize}
+    \item Follow consistent coding standards and naming conventions.
+    \item Organize the code base by feature or layer.
+    \item Write unit tests for core business logic, especially the targeting engine.
+\end{itemize}
+
+\section{Appendix A: Future Enhancements}
+Potential future enhancements include:
+\begin{itemize}
+    \item Mobile push notifications.
+    \item A self service rule builder with a graphical interface.
+    \item Integration with learning management systems for training content.
+\end{itemize}
+
+\end{document}

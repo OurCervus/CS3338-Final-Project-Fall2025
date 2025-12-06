@@ -1,0 +1,335 @@
+\documentclass{article} 
+
+\usepackage{geometry}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+]{hyperref}
+\usepackage{tabularx}
+
+\pagestyle{fancy}
+\geometry{a4paper, margin=1in}
+\captionsetup{labelformat=empty}
+\graphicspath{ {../../assets/} }
+
+\begin{document}
+
+\title{Software Requirements Specification \\ \large Role-Based Internal Platform for Targeted Content Delivery}
+\author{Version 1.0.0}
+\date{
+       Group 20
+   \\ Jesus Calvo,
+    \\ Justin Gip
+    \\ Shane Guzman
+    \\ Samuel Mekonnen
+    \\ ------------------
+    \\ December 5, 2025
+    \\ CS 3338-01 (94305)
+    }
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\fancyhf{}
+\fancyhead[C]{Software Requirements Specification}
+\fancyfoot[C]{\thepage}
+
+\section*{Version Description}
+\begin{table}[h!]
+\centering
+\caption{\textbf{Version Description}}
+\begin{tabularx}{\textwidth}{|l|l|X|l|}
+\hline
+\textbf{Author} & \textbf{Date} & \textbf{Description} & \textbf{Version} \\ \hline
+Your Name & 10/10/25 & Initial SRS draft created from project proposal & 0.1.0 \\ \hline
+Your Name & 10/25/25 & Updated functional and nonfunctional requirements for Snapshot 2 & 0.2.0 \\ \hline
+Team & 12/5/25 & Final SRS after design and testing feedback & 1.0.0 \\ \hline
+\end{tabularx}
+\end{table}
+
+\section{Introduction}
+
+The \textbf{Role-Based Internal Platform for Targeted Content Delivery} (the Platform) is an internal web application that enables organizations to deliver announcements, training materials, and other content to employees based on their role, department, and other attributes.
+This Software Requirements Specification (SRS) defines the functional and nonfunctional requirements for the Platform.
+
+\subsection{Purpose}
+The purpose of this SRS is to:
+\begin{itemize}
+    \item Provide a clear and shared understanding of what the Platform must do.
+    \item Serve as the basis for design, implementation, and testing.
+    \item Support project planning by scoping features into snapshots.
+\end{itemize}
+
+\begin{itemize}
+    \item This document is intended for developers implementing the system and to understand the platform.
+\end{itemize}
+
+\subsection{Document Conventions}
+\begin{itemize}
+    \item Functional requirements are labeled as FR-\textit{nn}, for example FR-01.
+    \item Nonfunctional requirements are labeled as NFR-\textit{nn}.
+\end{itemize}
+
+\subsection{Intended Audience and Reading Suggestions}
+\begin{itemize}
+    \item Readers who only need a high level understanding of the project should focus on Sections 1 and 2.
+    \item Developers should focus on Sections 3 (System Features) and 4 (External Interfaces).
+    \item Testers should focus on Sections 3 and 5 to derive test cases.
+\end{itemize}
+
+\subsection{Product Scope}
+The Platform offers:
+\begin{itemize}
+    \item Centralized content management for internal communications and training.
+    \item Role based and attribute based targeting so that users see content relevant to them.
+    \item Tracking and reporting to demonstrate that required content has been delivered and acknowledged.
+\end{itemize}
+
+\subsection{References}
+\begin{itemize}
+    \item Software Design Document (SDD) for Role-Based Internal Platform for Targeted Content Delivery.
+\end{itemize}
+
+\section{Overall Description}
+
+\subsection{Product Perspective}
+The Platform is a standalone internal web application.
+In a real organization it could integrate with existing systems such as single sign on (SSO) and HR databases, but for this platform those integrations may be simulated with dummy data.
+
+\subsection{Product Functions}
+At a high level, the Platform provides:
+\begin{itemize}
+    \item User authentication and role based access control.
+    \item Administration tools for creating, tagging, and scheduling content.
+    \item Targeted content feeds for end users.
+    \item Notifications for new or expiring content.
+    \item Reporting on content views and acknowledgements.
+\end{itemize}
+
+\subsection{User Classes and Characteristics}
+\begin{itemize}
+    \item \textbf{Employee} Any internal user who can view content targeted to them, mark items as read, and optionally provide feedback.
+    \item \textbf{Manager} Can view employee content plus team level reports for their direct reports.
+    \item \textbf{Content Administrator} Can create, edit, schedule, and retire content items; configure targeting rules; run reports.
+    \item \textbf{System Administrator} Manages users, roles, and system level configuration.
+\end{itemize}
+
+\subsection{Operating Environment}
+\begin{itemize}
+    \item Web application accessible via modern browsers (Chrome, Edge, Firefox).
+    \item Back end server running on Linux or similar environment, packaged in Docker.
+    \item Relational database such as PostgreSQL.
+\end{itemize}
+
+\subsection{Design and Implementation Constraints}
+\begin{itemize}
+    \item Python for back end. React for front end.
+    \item Docker container for demonstration.
+\end{itemize}
+
+\subsection{Assumptions and Dependencies}
+\begin{itemize}
+    \item All users already exist in the system or can be created by a System Administrator.
+    \item The organization maintains accurate role and department information for users.
+\end{itemize}
+
+\section{System Features}
+
+Each system feature below contains a description and a set of functional requirements.
+
+\subsection{Feature 1: User Authentication and Authorization}
+
+\subsubsection{Description}
+This feature provides secure login and logout for all users and enforces role based access control (RBAC) for all pages and actions.
+
+\subsubsection{Functional Requirements}
+\begin{itemize}
+    \item \textbf{FR-01} The system shall allow a user to log in using a unique email and password.
+    \item \textbf{FR-02} The system shall validate user credentials against stored user records.
+    \item \textbf{FR-03} The system shall prevent access to authenticated pages when the user is not logged in.
+    \item \textbf{FR-04} The system shall assign one or more roles to each user.
+    \item \textbf{FR-05} The system shall restrict access to administrative functions to users with appropriate roles.
+\end{itemize}
+
+\subsection{Feature 2: Content Management}
+
+\subsubsection{Description}
+Admins manage internal content such as announcements, training modules, and policy updates.
+
+\subsubsection{Functional Requirements}
+\begin{itemize}
+    \item \textbf{FR-06} The system shall allow a Content Administrator to create a content item with at least a title, body, and categories.
+    \item \textbf{FR-07} The system shall allow a Content Administrator to specify a start date and end date for displaying a content item.
+    \item \textbf{FR-08} The system shall allow a Content Administrator to mark a content item as mandatory.
+    \item \textbf{FR-09} The system shall allow a Content Administrator to edit an existing content item before its end date.
+    \item \textbf{FR-10} The system shall allow a Content Administrator to archive or retire a content item so it no longer appears in feeds.
+\end{itemize}
+
+\subsection{Feature 3: Targeting Rules and Audiences}
+
+\subsubsection{Description}
+Admins define targeting rules to control which users see each content item.
+
+\subsubsection{Functional Requirements}
+\begin{itemize}
+    \item \textbf{FR-11} The system shall allow a Content Administrator to define rules based on user attributes such as role, department, and location.
+    \item \textbf{FR-12} The system shall allow a Content Administrator to combine multiple rule conditions using logical AND and OR.
+    \item \textbf{FR-13} The system shall evaluate targeting rules at runtime to determine which users are in the audience for a content item.
+    \item \textbf{FR-14} The system shall update targeting evaluations when user attributes change.
+\end{itemize}
+
+\subsection{Feature 4: Targeted Content Feed}
+
+\subsubsection{Description}
+Each user has a personalized feed displaying content items targeted to them.
+
+\subsubsection{Functional Requirements}
+\begin{itemize}
+    \item \textbf{FR-15} The system shall show each logged in user a feed of active content items targeted to that user.
+    \item \textbf{FR-16} The system shall display mandatory content items with a visual indicator.
+    \item \textbf{FR-17} The system shall allow the user to filter the feed by category and completion status.
+    \item \textbf{FR-18} The system shall allow the user to search content items by title or keyword.
+    \item \textbf{FR-19} The system shall not show content items that have passed their end date.
+\end{itemize}
+
+\subsection{Feature 5: Acknowledgements and Completion Tracking}
+
+\subsubsection{Description}
+The Platform tracks which users have opened or acknowledged content items.
+
+\subsubsection{Functional Requirements}
+\begin{itemize}
+    \item \textbf{FR-20} The system shall record when a user views a content item.
+    \item \textbf{FR-21} For mandatory content, the system shall provide an explicit acknowledgement action that the user must click.
+    \item \textbf{FR-22} The system shall store the timestamp when a user acknowledges a mandatory content item.
+    \item \textbf{FR-23} The system shall prevent a user from acknowledging a content item on behalf of another user.
+\end{itemize}
+
+\subsection{Feature 6: Reporting and Analytics}
+
+\subsubsection{Description}
+Admins and managers need to see how content is performing and whether compliance targets are met.
+
+\subsubsection{Functional Requirements}
+\begin{itemize}
+    \item \textbf{FR-24} The system shall allow a Content Administrator to view, for each content item, the number of users targeted, the number of users who have viewed it, and the number who have acknowledged it.
+    \item \textbf{FR-25} The system shall allow a Manager to view completion status for mandatory content for their direct reports.
+    \item \textbf{FR-26} The system shall allow exporting report data to a CSV file.
+\end{itemize}
+
+\subsection{Feature 7: Administration and Configuration}
+
+\subsubsection{Description}
+System Administrators manage users, roles, and basic configuration settings.
+
+\subsubsection{Functional Requirements}
+\begin{itemize}
+    \item \textbf{FR-27} The system shall allow a System Administrator to create, update, deactivate, and reactivate user accounts.
+    \item \textbf{FR-28} The system shall allow a System Administrator to assign roles to users.
+    \item \textbf{FR-29} The system shall allow a System Administrator to reset a user password.
+    \item \textbf{FR-30} The system shall log administrative changes for logging purposes.
+\end{itemize}
+
+\section{External Interface Requirements}
+
+\subsection{User Interfaces}
+\begin{itemize}
+    \item \textbf{Login Page} Email and password inputs, error messages for invalid credentials.
+    \item \textbf{End User Dashboard} Personalized content feed, filters, search, and quick indicators for mandatory content.
+    \item \textbf{Content Detail Page} Title, body, metadata, acknowledgement button for mandatory content.
+    \item \textbf{Admin Console} Navigation for content list, content editor, targeting rules, and reporting.
+\end{itemize}
+
+\subsection{Hardware Interfaces}
+No specific hardware interfaces are required beyond a standard workstation or laptop that can run a modern web browser.
+
+\subsection{Software Interfaces}
+\begin{itemize}
+    \item Relational database management system (PostgreSQL).
+    \item Optional SMTP or email service for notifications.
+\end{itemize}
+
+\subsection{Communications Interfaces}
+\begin{itemize}
+    \item HTTP or HTTPS between browsers and the web server.
+    \item TCP/IP communication between the application server and the database.
+\end{itemize}
+
+\section{Nonfunctional Requirements}
+
+\subsection{Performance Requirements}
+\begin{itemize}
+    \item \textbf{NFR-01} The system shall display the user's content feed within 3 seconds for a user with fewer than 50 active content items.
+    \item \textbf{NFR-02} The system shall support at least 50 concurrent logged in users in the course demo environment.
+\end{itemize}
+
+\subsection{Security Requirements}
+\begin{itemize}
+    \item \textbf{NFR-03} All passwords shall be stored as salted hashes, not in plain text.
+    \item \textbf{NFR-04} The system shall automatically log out users after 30 minutes of inactivity.
+    \item \textbf{NFR-05} The system shall restrict access to administrative pages to users with appropriate roles.
+\end{itemize}
+
+\subsection{Reliability and Availability}
+\begin{itemize}
+    \item \textbf{NFR-06} The system shall be able to recover from a restart without loss of persisted data.
+    \item \textbf{NFR-07} The system shall handle unexpected errors gracefully, displaying a generic error message and logging details for developers.
+\end{itemize}
+
+\subsection{Maintainability}
+\begin{itemize}
+    \item \textbf{NFR-08} The code base shall use clear naming conventions and be organized into logical modules.
+    \item \textbf{NFR-09} Core business logic, including targeting evaluation and acknowledgement tracking, shall have automated unit tests.
+\end{itemize}
+
+\subsection{Usability}
+\begin{itemize}
+    \item \textbf{NFR-10} The user interface shall be responsive for common screen sizes like laptops or large tablets.
+    \item \textbf{NFR-11} Mandatory content items shall be clearly distinguishable from optional content.
+\end{itemize}
+
+\subsection{Legal and Ethical Requirements}
+\begin{itemize}
+    \item \textbf{NFR-12} The Platform shall not expose sensitive user attributes in targeting rules or reports.
+    \item \textbf{NFR-13} The Platform shall only collect data that is necessary to deliver and track content.
+\end{itemize}
+
+\section{Appendix A: Glossary}
+\begin{itemize}
+    \item \textbf{Targeted Content} Content that is visible only to users who meet specified audience rules.
+    \item \textbf{Mandatory Content} Content that certain users are required to read and acknowledge like privacy and polices.
+    \item \textbf{RBAC} Role Based Access Control.
+\end{itemize}
+
+\begin{table}[h!]
+\centering
+\caption{\textbf{Glossary of Terms and Acronyms}}
+\begin{tabularx}{0.9\textwidth}{|l|X|}
+\hline
+\textbf{Term} & \textbf{Definition} \\ \hline
+Targeted Content & Content that is visible only to users who meet specified audience rules. \\ \hline
+Mandatory Content & Content that certain users are required to read and acknowledge. \\ \hline
+RBAC & Role Based Access Control. \\ \hline
+\end{tabularx}
+\end{table}
+
+\section{Appendix B: Mapping to Snapshots}
+For the workflow, features can be divided into snapshots as follows:
+
+\begin{itemize}
+    \item \textbf{Snapshot 1} Basic project setup, user authentication (FR-01 to FR-05), minimal dashboard showing static content.
+    \item \textbf{Snapshot 2} Content management and basic targeting (FR-06 to FR-14).
+    \item \textbf{Snapshot 3} Targeted content feed, acknowledgements, and reporting (FR-15 to FR-26).
+    \item \textbf{Snapshot 4} Administration, refinements, nonfunctional requirements, and stretch goals (FR-27 to FR-30, NFRs).
+\end{itemize}
+
+\end{document}
