@@ -1,0 +1,79 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+\pagestyle{fancy}
+\geometry{a4paper, margin=1in}
+\fancyhf{}
+\fancyhead[C]{README / User Manual}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+\title{README \\ \large Role-Based Internal Platform for Targeted Content Delivery}
+\author{Group 20}
+\date{December 5, 2025}
+
+\maketitle
+
+\section{Jira Project Link}
+
+Project management and tasks are tracked in Jira:
+
+\begin{itemize}
+    \item Jira Board: \url{https://calstatela-cs3338-p6fsp1dk.atlassian.net/jira/software/projects/CSLDGK/boards/34}
+\end{itemize}
+
+\section{Objective}
+
+The \textbf{Role-Based Internal Platform for Targeted Content Delivery} is an internal web application that:
+\begin{itemize}
+    \item Delivers announcements, policies, and training materials to employees.
+    \item Uses roles, departments, and other attributes to decide which user sees which content.
+    \item Tracks views and acknowledgements for mandatory content.
+\end{itemize}
+
+\section{Why This Software Matters}
+
+The Platform is designed to improve:
+\begin{itemize}
+    \item \textbf{Productivity:} Users see a focused feed of content that is relevant to their role instead of generic email blasts.
+    \item \textbf{Onboarding:} New employees can quickly find the required training and policies that are aimed at them.
+    \item \textbf{Compliance:} Mandatory content can be tracked through acknowledgments and reports.
+\end{itemize}
+
+\section{How to Access the Platform}
+
+For the purposes of this project, we assume the Platform is offered as a subscription-based internal product.
+
+\subsection*{Production-Like Scenario (Conceptual)}
+
+In a real deployment, an organization would:
+\begin{itemize}
+    \item Purchase a subscription from the official product website.
+    \item Receive secure access to a hosted web URL (e.g., \texttt{https://portal.company-name.com}).
+    \item Log in using organization credentials to access the Platform.
+\end{itemize}
+
+\subsection*{Course / Demo Setup}
+
+For this course project:
+\begin{itemize}
+    \item The application runs locally using Docker or a local development server.
+    \item The typical access URL is: \texttt{http://localhost:3000} (frontend) or as specified by the team.
+    \item Test accounts (e.g., Employee, Manager, Admin) are documented in the project report or seeded in the database.
+\end{itemize}
+
+\section{Basic Usage Overview}
+
+\begin{itemize}
+    \item \textbf{Employees} log in to view their personalized content feed and acknowledge mandatory items.
+    \item \textbf{Managers} can additionally view completion summaries for their team.
+    \item \textbf{Content Administrators} create and schedule content and define targeting rules.
+    \item \textbf{System Administrators} manage users, roles, and high-level configuration.
+\end{itemize}
+
+\end{document}
